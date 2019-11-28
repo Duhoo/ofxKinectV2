@@ -259,30 +259,29 @@ const ofPixels& ofxKinectV2::getIRPixels() const
 }
 
 
-float ofxKinectV2::getDistanceAt(std::size_t x, std::size_t y) const
+float ofxKinectV2::getDistanceAt(int x, int y) const
 {
-    return glm::distance(glm::vec3(0, 0, 0), getWorldCoordinateAt(x, y));
+	if (rawDepthPixels.isAllocated()) {
+		return rawDepthPixels[x + y * rawDepthPixels.getWidth()];
+	}
+	return 0.0f;
 }
 
-glm::vec3 ofxKinectV2::getWorldCoordinateAt(std::size_t x, std::size_t y) const
+ofVec3f ofxKinectV2::getWorldCoordinateAt(int x, int y) const
 {
-    glm::vec3 position;
-    
-    if (protonect.registration && protonect.undistorted)
-    {
-//        std::cout << x << ", " << protonect.undistorted->width << std::endl;
-//        std::cout << y << ", " << protonect.undistorted->height << std::endl;
-//        
-        if (x < protonect.undistorted->width && y < protonect.undistorted->height)
-            protonect.registration->getPointXYZ(protonect.undistorted, y, x, position.x, position.y, position.z);
-        else ofLogWarning("ofxKinectV2::getWorldCoordinateAt") << "Invalid x, y coordinates.";
-
-    }
-    else ofLogWarning("ofxKinectV2::getWorldCoordinateAt") << "Kinect is not initialized, returning 0, 0, 0.";
-    
-    return position;
+	return getWorldCoordinateAt(x, y, getDistanceAt(x, y));
 }
-
+ofVec3f ofxKinectV2::getWorldCoordinateAt(int x, int y, float z) const
+{
+	ofVec3f world;
+	if (bOpened) {
+		libfreenect2::Freenect2Device::IrCameraParams p = protonect.getIrCameraParams();
+		world.z = z;
+		world.x = (x - p.cx) * z / p.fx;
+		world.y = -(y - p.cy) * z / p.fy;
+	}
+	return world;
+}
 // ------------------------------------------
 int ofxKinectV2::getMinDistance() const {
 	return (mSettings.config.MinDepth * 1000);

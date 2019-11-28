@@ -90,10 +90,12 @@ public:
     //const ofFloatImage& getDistancePixels() const;
     
     /// \brief Get the calulated distance for point x, y in the getRegisteredPixels image.
-    float getDistanceAt(std::size_t x, std::size_t y) const;
+    float getDistanceAt(int x, int y) const;
     
     /// \brief Get the world X, Y, Z coordinates in millimeters for x, y in getRegisteredPixels image.
-    glm::vec3 getWorldCoordinateAt(std::size_t x, std::size_t y) const;
+    ofVec3f getWorldCoordinateAt(int x, int y) const;
+
+	ofVec3f getWorldCoordinateAt(int x, int y, float z) const;
 
 	/// \brief Get the minimum distance the kinect is tracking in millimeters
 	int getMinDistance() const;

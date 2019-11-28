@@ -32,6 +32,12 @@ public:
 #endif
     };
 
+	libfreenect2::Freenect2Device::IrCameraParams getIrCameraParams() {
+		//Based on https://github.com/hanasaan/ofxMultiKinectV2
+		if (dev) return dev->getIrCameraParams();
+		return libfreenect2::Freenect2Device::IrCameraParams();
+	}
+
     int open(const std::string& serial,
              PacketPipelineType packetPipelineType, libfreenect2::Freenect2Device::Config aConfig );
     
